@@ -1,0 +1,43 @@
+# Autopilot Flywheel — пример конфигурации
+# Требует верификации после завершения autopilot-jet
+
+autopilot:
+  core:
+    dashboard_port: 3000
+    output_dir: "./output"
+    interactive: true
+  planning:
+    beads:
+      enabled: true
+      workflow_skill: "beads-workflow"
+      viewer_api: "bv --robot-triage"
+  orchestration:
+    ntm:
+      enabled: true
+      session_prefix: "flywheel"
+      agents:
+        claude: 2
+        codex: 1
+        gemini: 1
+      max_parallel: 4
+  coordination:
+    agent_mail:
+      enabled: true
+      mcp_endpoint: "http://localhost:8765"
+      file_lease_timeout: 300
+  safety:
+    dcg:
+      enabled: true
+      level: "strict"
+  memory:
+    cass:
+      enabled: true
+      index_path: "~/.cass/index.db"
+    cass_memory:
+      enabled: true
+      mcp_endpoint: "http://localhost:8766"
+      auto_context: true
+      auto_outcome: true
+  deployment:
+    acfs:
+      auto_install: false
