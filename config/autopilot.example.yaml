@@ -1,43 +1,47 @@
-# Autopilot Flywheel — пример конфигурации
-# Требует верификации после завершения autopilot-jet
+# Autopilot Flywheel — DESIGN PLACEHOLDER
+#
+# Этот файл НЕ является подтверждённой production-конфигурацией.
+# Значения внешних endpoints/commands намеренно не выдуманы.
+# Перед включением интеграции её статус должен стать VERIFIED в docs/INTERFACES.md.
+
+schema_version: 0
+project_state: "design_foundation"
 
 autopilot:
   core:
-    dashboard_port: 3000
     output_dir: "./output"
     interactive: true
+
   planning:
-    beads:
-      enabled: true
-      workflow_skill: "beads-workflow"
-      viewer_api: "bv --robot-triage"
+    enabled: false
+    provider: "unverified"
+    config: {}
+
   orchestration:
-    ntm:
-      enabled: true
-      session_prefix: "flywheel"
-      agents:
-        claude: 2
-        codex: 1
-        gemini: 1
-      max_parallel: 4
+    enabled: false
+    provider: "unverified"
+    max_parallel: 1
+    config: {}
+
   coordination:
-    agent_mail:
-      enabled: true
-      mcp_endpoint: "http://localhost:8765"
-      file_lease_timeout: 300
+    enabled: false
+    provider: "unverified"
+    config: {}
+
   safety:
-    dcg:
-      enabled: true
-      level: "strict"
+    enabled: true
+    fail_closed: true
+    provider: "unverified"
+    # Пока внешний guard не VERIFIED, high-risk actions не должны автоматически разрешаться.
+    config: {}
+
   memory:
-    cass:
-      enabled: true
-      index_path: "~/.cass/index.db"
-    cass_memory:
-      enabled: true
-      mcp_endpoint: "http://localhost:8766"
-      auto_context: true
-      auto_outcome: true
+    enabled: false
+    session_search_provider: "unverified"
+    procedural_memory_provider: "unverified"
+    config: {}
+
   deployment:
-    acfs:
-      auto_install: false
+    enabled: false
+    provider: "unverified"
+    config: {}

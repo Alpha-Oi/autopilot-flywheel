@@ -1,31 +1,44 @@
 <#
 .SYNOPSIS
-    Верификация интеграции Autopilot Flywheel.
+    Phase 0 verification scaffold for Autopilot Flywheel.
+
 .DESCRIPTION
-    Запускать ПОСЛЕ завершения https://github.com/Alpha-Oi/autopilot-jet.
+    Этот скрипт намеренно НЕ запускает предполагаемые команды сторонних инструментов.
+    До подтверждения CLI/API по pinned upstream version такие команды считаются гипотезами.
+
+    Скрипт показывает обязательный verification matrix и ссылки на upstream.
+    Фактические probes добавляются только после evidence review.
 #>
 
-Write-Host "Верификация интеграций Autopilot Flywheel" -ForegroundColor Cyan
-Write-Host "Запускать только после завершения autopilot-jet!" -ForegroundColor Yellow
+$ErrorActionPreference = "Stop"
+
+Write-Host "Autopilot Flywheel — Phase 0 Integration Verification" -ForegroundColor Cyan
+Write-Host "Mode: evidence-first / non-destructive" -ForegroundColor Yellow
 Write-Host ""
 
 $checks = @(
-    @{ Name = "DCG";            Repo = "Dicklesworthstone/destructive_command_guard";      API = "dcg --version" },
-    @{ Name = "CASS";           Repo = "Dicklesworthstone/coding_agent_session_search";   API = "cass --version" },
-    @{ Name = "CASS Memory";    Repo = "Dicklesworthstone/cass_memory_system";            API = "cm --version" },
-    @{ Name = "Beads Viewer";   Repo = "Dicklesworthstone/beads_viewer";                  API = "bv --version" },
-    @{ Name = "Beads Workflow"; Repo = "Dicklesworthstone/beads-workflow";                API = "beads-workflow --version" },
-    @{ Name = "NTM";            Repo = "Dicklesworthstone/named_tmux_manager";            API = "ntm --version" },
-    @{ Name = "Agent Mail";     Repo = "Dicklesworthstone/mcp_agent_mail";                API = "am --version" },
-    @{ Name = "ACFS";           Repo = "Dicklesworthstone/agentic_coding_flywheel_setup"; API = "(shell script)" }
+    @{ Name = "Beads Workflow"; Repo = "Dicklesworthstone/beads-workflow"; Status = "PROPOSED" },
+    @{ Name = "Beads Viewer"; Repo = "Dicklesworthstone/beads_viewer"; Status = "PROPOSED" },
+    @{ Name = "NTM"; Repo = "Dicklesworthstone/named_tmux_manager"; Status = "PROPOSED" },
+    @{ Name = "MCP Agent Mail"; Repo = "Dicklesworthstone/mcp_agent_mail"; Status = "PROPOSED" },
+    @{ Name = "DCG"; Repo = "Dicklesworthstone/destructive_command_guard"; Status = "PROPOSED" },
+    @{ Name = "CASS"; Repo = "Dicklesworthstone/coding_agent_session_search"; Status = "PROPOSED" },
+    @{ Name = "CASS Memory"; Repo = "Dicklesworthstone/cass_memory_system"; Status = "PROPOSED" },
+    @{ Name = "ACFS"; Repo = "Dicklesworthstone/agentic_coding_flywheel_setup"; Status = "PROPOSED" }
 )
 
 foreach ($c in $checks) {
-    Write-Host "-- $($c.Name) --" -ForegroundColor Magenta
-    Write-Host "   Repo: https://github.com/$($c.Repo)"
-    Write-Host "   API:  $($c.API)"
-    Write-Host "   [ ] Проверено"
+    Write-Host "[$($c.Status)] $($c.Name)" -ForegroundColor Magenta
+    Write-Host "  https://github.com/$($c.Repo)"
+    Write-Host "  [ ] pin version/tag"
+    Write-Host "  [ ] record commit SHA"
+    Write-Host "  [ ] inspect official docs/source"
+    Write-Host "  [ ] observe real capability surface"
+    Write-Host "  [ ] record inputs/outputs/errors"
+    Write-Host "  [ ] review security/state/concurrency"
+    Write-Host "  [ ] update docs/INTERFACES.md"
     Write-Host ""
 }
 
-Write-Host "После проверки обновите docs/INTERFACES.md" -ForegroundColor Yellow
+Write-Host "Protocol: docs/VERIFICATION.md" -ForegroundColor Cyan
+Write-Host "No external commands were executed." -ForegroundColor Green

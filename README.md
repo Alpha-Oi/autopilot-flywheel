@@ -1,77 +1,86 @@
 # Autopilot Flywheel
 
-> Мультиагентная самообучающаяся платформа для автономной разработки ПО.
-> Эволюция [autopilot-jet](https://github.com/Alpha-Oi/autopilot-jet) на базе экосистемы [Dicklesworthstone](https://github.com/Dicklesworthstone).
+> Мультиагентная самообучающаяся платформа для автономной разработки ПО.  
+> Эволюция [autopilot-jet](https://github.com/Alpha-Oi/autopilot-jet) в сторону безопасной, координируемой и обучающейся агентной фабрики.
 
-## ВАЖНО: ВЕРИФИКАЦИЯ ПОСЛЕ ЗАВЕРШЕНИЯ autopilot-jet
+![status: vision](https://img.shields.io/badge/status-vision-blue)
+![stage: foundation](https://img.shields.io/badge/stage-foundation-orange)
+![license: MIT](https://img.shields.io/badge/license-MIT-green)
 
-Этот репозиторий — vision document и карта интеграции.
+## Статус проекта
 
-Реальная разработка начнётся **только после того, как основной проект [autopilot-jet](https://github.com/Alpha-Oi/autopilot-jet) будет полностью завершён и стабилен.**
+**Текущий режим: DESIGN / FOUNDATION.**
 
-После готовности `autopilot-jet` необходимо повторно проверить ВСЮ архитектуру, интерфейсы, предположения и схемы данных.
+Репозиторий фиксирует архитектуру, границы компонентов, правила для AI-агентов и процедуру верификации интеграций. Полноценная реализация Flywheel не должна начинаться до завершения и стабилизации базового проекта [autopilot-jet](https://github.com/Alpha-Oi/autopilot-jet) и прохождения Phase 0 Verification Gate.
 
-- Проверить актуальность API каждого из 7 инструментов
-- Проверить совместимость версий и зависимостей
-- Проверить реальные форматы обмена данными (JSON-схемы, MCP-ресурсы)
-- Проверить, что архитектура Autopilot Core не изменилась
-- Проверить пути интеграции на реальных примерах
-- Обновить этот README и `docs/INTERFACES.md`
+Это ограничение намеренное: внешние CLI, MCP tools, REST endpoints, схемы данных и версии зависимостей должны быть подтверждены по фактическим upstream-репозиториям перед тем, как код начнёт от них зависеть.
 
-**Статус:** Ожидание завершения `autopilot-jet` -> фаза верификации -> разработка.
+## Главные документы
 
-## Что это
+| Документ | Назначение |
+|---|---|
+| [docs/VISION.md](docs/VISION.md) | Продуктовое видение, мотивация и целевой эффект |
+| [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) | Архитектурные границы, потоки, инварианты и режимы отказа |
+| [docs/INTERFACES.md](docs/INTERFACES.md) | Реестр интеграций и правила фиксации внешних контрактов |
+| [docs/VERIFICATION.md](docs/VERIFICATION.md) | Процедура проверки upstream API/CLI/MCP и evidence requirements |
+| [docs/ROADMAP.md](docs/ROADMAP.md) | Поэтапная реализация и exit criteria |
+| [AGENTS.md](AGENTS.md) | Обязательные правила для Codex, Claude Code и других coding agents |
+| [CONTRIBUTING.md](CONTRIBUTING.md) | Правила изменений, PR и архитектурных решений |
+| [docs/adr/](docs/adr/) | Architecture Decision Records |
 
-Autopilot Flywheel превращает одиночного AI-агента в рой координируемых агентов, работающих параллельно над одной кодовой базой, с общей памятью, защитой от конфликтов и способностью учиться на собственном опыте.
+## Целевая архитектура
 
-Платформа объединяет 7 инструментов:
+```text
+User / Operator
+      |
+      v
++-------------------------+
+|     Autopilot Core      |  <- intent, spec, verification, dashboard
++------------+------------+
+             |
+             v
++-------------------------+
+| Planning / Task Graph   |  <- Beads Workflow + bv
++------------+------------+
+             |
+             v
++-------------------------+
+| Orchestration           |  <- NTM
++------------+------------+
+             |
+      +------+------+----------------+
+      |             |                |
+      v             v                v
+  Claude Agent   Codex Agent    Gemini/other
+      |             |                |
+      +------+------+----------------+
+             |
+             v
++-------------------------+
+| Coordination / Leases   |  <- MCP Agent Mail
++-------------------------+
+| Safety Enforcement      |  <- DCG + policy gates
++-------------------------+
+| Memory / Learning       |  <- CASS + CASS Memory
++-------------------------+
+| Deployment              |  <- ACFS
++-------------------------+
+```
 
-1. **Beads Workflow** — декомпозиция плана в задачи
-2. **Beads Viewer (bv)** — граф зависимостей и приоритизация
-3. **NTM** — оркестрация агентов в tmux
-4. **MCP Agent Mail** — координация и файловые аренды
-5. **DCG** — защита от деструктивных команд
-6. **CASS + CASS Memory** — память и самообучение
-7. **ACFS** — воспроизводимое развёртывание
+Подробности: [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md).
 
-## Слои
+## Базовые принципы
 
-- **Ядро:** Autopilot Core
-- **1. Планирование:** Beads Workflow, Beads Viewer
-- **2. Оркестрация:** NTM
-- **3. Координация:** MCP Agent Mail
-- **3. Защита:** DCG
-- **4. Память:** CASS, CASS Memory
-- **5. Развёртывание:** ACFS
+1. **Verify before integrate.** Никакой внешний API не считается контрактом без evidence.
+2. **Adapter-first.** Autopilot Core не должен зависеть от конкретного внешнего инструмента напрямую.
+3. **Safety fails closed.** Отказ защитного слоя не разрешает опасные операции.
+4. **Graceful degradation — только там, где это безопасно.**
+5. **Auditable execution.** План, делегирование, изменения, проверки и outcomes должны быть трассируемыми.
+6. **Idempotent orchestration.** Повторный запуск не должен дублировать или повреждать состояние.
+7. **Human authority.** Необратимые или высокорисковые действия требуют явной политики/разрешения.
+8. **Learning is evidence-based.** Память не должна превращать единичную ошибку или галлюцинацию в постоянное правило.
 
-## Поток данных
-
-1. Запрос
-2. Планирование (Autopilot Core + Beads)
-3. Контекст (CASS Memory -> cm context)
-4. Запуск (NTM + Agent Mail)
-5. Выполнение (агенты + DCG)
-6. Проверка (Autopilot Core)
-7. Обучение (CASS + CASS Memory -> cm outcome)
-
-## Дорожная карта
-
-### Фаза 0 — Ожидание и верификация
-- [x] Vision document
-- [ ] Завершение autopilot-jet
-- [ ] Верификация архитектуры
-- [ ] Проверка API всех 7 инструментов
-- [ ] Обновление docs/INTERFACES.md
-
-### Этап 1 — Безопасность (DCG)
-### Этап 2 — Память (CASS + CASS Memory)
-### Этап 3 — Планирование (Beads)
-### Этап 4 — Оркестрация (NTM)
-### Этап 5 — Координация (Agent Mail)
-### Этап 6 — Развёртывание (ACFS)
-### Этап 7 — Продукт (v1.0)
-
-## Зависимости
+## Интеграции, которые планируется проверить
 
 - [Dicklesworthstone/beads-workflow](https://github.com/Dicklesworthstone/beads-workflow)
 - [Dicklesworthstone/beads_viewer](https://github.com/Dicklesworthstone/beads_viewer)
@@ -82,6 +91,44 @@ Autopilot Flywheel превращает одиночного AI-агента в 
 - [Dicklesworthstone/cass_memory_system](https://github.com/Dicklesworthstone/cass_memory_system)
 - [Dicklesworthstone/agentic_coding_flywheel_setup](https://github.com/Dicklesworthstone/agentic_coding_flywheel_setup)
 
+> Названия команд, MCP tools, REST routes, ports и JSON schemas не считаются подтверждёнными только потому, что упомянуты в vision или ранних заметках. Их статус ведётся в [docs/INTERFACES.md](docs/INTERFACES.md).
+
+## Репозиторий
+
+```text
+.
+├── AGENTS.md
+├── CONTRIBUTING.md
+├── LICENSE
+├── README.md
+├── config/
+│   └── autopilot.example.yaml
+├── docs/
+│   ├── ARCHITECTURE.md
+│   ├── INTERFACES.md
+│   ├── ROADMAP.md
+│   ├── VERIFICATION.md
+│   ├── VISION.md
+│   └── adr/
+├── scripts/
+│   └── verify-integration.ps1
+└── tests/
+```
+
+## Ближайший gate
+
+Phase 0 завершается только когда:
+
+- `autopilot-jet` имеет зафиксированный стабильный baseline;
+- для каждой внешней интеграции сохранены версия/commit SHA и источники evidence;
+- подтверждены реальные CLI/MCP/REST контракты;
+- неизвестные интерфейсы явно помечены как UNKNOWN/PROPOSED, а не выданы за факт;
+- выбран минимальный end-to-end vertical slice;
+- архитектурные изменения зафиксированы ADR;
+- safety policy определена до запуска мультиагентного исполнения.
+
+До этого момента допустимы исследования, документация, протоколы проверки и безопасные scaffolds, но не production-зависимость от неподтверждённых интерфейсов.
+
 ## Лицензия
 
-MIT
+MIT — см. [LICENSE](LICENSE).
