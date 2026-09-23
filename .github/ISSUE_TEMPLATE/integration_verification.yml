@@ -1,0 +1,82 @@
+name: "🔌 Integration / verification"
+description: "Предложить или проверить внешний tool/API/MCP integration"
+title: "[INTEGRATION] "
+body:
+  - type: input
+    id: repository
+    attributes:
+      label: Upstream repository
+      placeholder: https://github.com/owner/repo
+    validations:
+      required: true
+
+  - type: input
+    id: capability
+    attributes:
+      label: Capability
+      placeholder: orchestration / coordination / memory / safety / ...
+    validations:
+      required: true
+
+  - type: input
+    id: version
+    attributes:
+      label: Version / tag / commit SHA
+      description: Если ещё не проверено, укажите UNKNOWN.
+    validations:
+      required: true
+
+  - type: dropdown
+    id: status
+    attributes:
+      label: Current evidence status
+      options:
+        - PROPOSED
+        - PARTIALLY VERIFIED
+        - VERIFIED candidate
+        - UNKNOWN
+    validations:
+      required: true
+
+  - type: textarea
+    id: observed
+    attributes:
+      label: Observed capability surface
+      description: Только то, что реально наблюдалось или подтверждено source/docs.
+
+  - type: textarea
+    id: evidence
+    attributes:
+      label: Evidence
+      description: Official docs/source, help output, schema, smoke test, commit SHA.
+    validations:
+      required: true
+
+  - type: textarea
+    id: state
+    attributes:
+      label: State / concurrency / recovery notes
+
+  - type: textarea
+    id: security
+    attributes:
+      label: Security notes
+      description: Auth, permissions, destructive actions, network exposure, secrets.
+    validations:
+      required: true
+
+  - type: textarea
+    id: compatibility
+    attributes:
+      label: Compatibility notes
+      description: OS, Codex, Claude Code, Gemini, WSL/container/VPS.
+
+  - type: checkboxes
+    id: protocol
+    attributes:
+      label: Verification protocol
+      options:
+        - label: Я сверился с docs/VERIFICATION.md.
+          required: true
+        - label: Я не выдаю неподтверждённый интерфейс за production contract.
+          required: true

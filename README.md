@@ -1,134 +1,286 @@
-# Autopilot Flywheel
+<div align="center">
 
-> Мультиагентная самообучающаяся платформа для автономной разработки ПО.  
-> Эволюция [autopilot-jet](https://github.com/Alpha-Oi/autopilot-jet) в сторону безопасной, координируемой и обучающейся агентной фабрики.
+# 🚀 Autopilot Flywheel
 
-![status: vision](https://img.shields.io/badge/status-vision-blue)
-![stage: foundation](https://img.shields.io/badge/stage-foundation-orange)
-![license: MIT](https://img.shields.io/badge/license-MIT-green)
+### From a single coding agent to a governed, multi-agent software factory
 
-## Статус проекта
+**Мультиагентная самообучающаяся платформа для автономной разработки ПО.**  
+Эволюция [autopilot-jet](https://github.com/Alpha-Oi/autopilot-jet) в сторону координируемой, проверяемой и безопасной агентной системы.
 
-**Текущий режим: DESIGN / FOUNDATION.**
+<p>
+  <img alt="Project status" src="https://img.shields.io/badge/status-vision-3b82f6?style=for-the-badge">
+  <img alt="Stage" src="https://img.shields.io/badge/stage-foundation-f59e0b?style=for-the-badge">
+  <img alt="License" src="https://img.shields.io/badge/license-MIT-22c55e?style=for-the-badge">
+</p>
 
-Репозиторий фиксирует архитектуру, границы компонентов, правила для AI-агентов и процедуру верификации интеграций. Полноценная реализация Flywheel не должна начинаться до завершения и стабилизации базового проекта [autopilot-jet](https://github.com/Alpha-Oi/autopilot-jet) и прохождения Phase 0 Verification Gate.
+<p>
+  <a href="docs/VISION.md"><strong>Vision</strong></a> ·
+  <a href="docs/ARCHITECTURE.md"><strong>Architecture</strong></a> ·
+  <a href="docs/ROADMAP.md"><strong>Roadmap</strong></a> ·
+  <a href="docs/VERIFICATION.md"><strong>Verification</strong></a> ·
+  <a href="CONTRIBUTING.md"><strong>Contributing</strong></a>
+</p>
 
-Это ограничение намеренное: внешние CLI, MCP tools, REST endpoints, схемы данных и версии зависимостей должны быть подтверждены по фактическим upstream-репозиториям перед тем, как код начнёт от них зависеть.
+> **Current state:** DESIGN / FOUNDATION  
+> Архитектура заложена. Реальные внешние интерфейсы проходят evidence-first верификацию до начала production-интеграции.
 
-## Главные документы
+</div>
 
-| Документ | Назначение |
+---
+
+## ✨ Идея в одном абзаце
+
+Autopilot Flywheel проектируется как слой управления над несколькими AI coding agents. Пользователь задаёт цель, система превращает её в спецификацию и граф задач, распределяет работу между агентами, координирует доступ к общей кодовой базе, блокирует опасные действия, проверяет результат и сохраняет проверенный опыт для следующих запусков.
+
+Ключевая идея — не просто **автоматизировать один запуск**, а создать **маховик накопления инженерного опыта**:
+
+```text
+задачи → проверенные outcomes → полезная память → более сильный контекст
+   ↑                                                   ↓
+   └────────────── более эффективные новые задачи ─────┘
+```
+
+---
+
+## 🎯 Что должен дать Flywheel
+
+| Capability | Зачем |
 |---|---|
-| [docs/VISION.md](docs/VISION.md) | Продуктовое видение, мотивация и целевой эффект |
-| [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) | Архитектурные границы, потоки, инварианты и режимы отказа |
-| [docs/INTERFACES.md](docs/INTERFACES.md) | Реестр интеграций и правила фиксации внешних контрактов |
-| [docs/VERIFICATION.md](docs/VERIFICATION.md) | Процедура проверки upstream API/CLI/MCP и evidence requirements |
-| [docs/ROADMAP.md](docs/ROADMAP.md) | Поэтапная реализация и exit criteria |
-| [AGENTS.md](AGENTS.md) | Обязательные правила для Codex, Claude Code и других coding agents |
-| [CONTRIBUTING.md](CONTRIBUTING.md) | Правила изменений, PR и архитектурных решений |
-| [docs/adr/](docs/adr/) | Architecture Decision Records |
+| 🧭 **Planning** | Превращать спецификацию в dependency-aware task graph |
+| 🧠 **Memory** | Переиспользовать только проверенный опыт с provenance и confidence |
+| 🕸️ **Multi-agent orchestration** | Выполнять независимые задачи параллельно |
+| 📬 **Coordination** | Не допускать silent overwrite и конфликтов между агентами |
+| 🛡️ **Runtime safety** | Блокировать destructive/high-risk actions до выполнения |
+| 🔍 **Verification** | Сравнивать результат с acceptance criteria и evidence |
+| 📜 **Auditability** | Отвечать на вопрос «кто, что, когда и почему сделал» |
+| ⚙️ **Reproducibility** | Воспроизводимо поднимать совместимую агентную среду |
 
-## Целевая архитектура
+---
 
-```text
-User / Operator
-      |
-      v
-+-------------------------+
-|     Autopilot Core      |  <- intent, spec, verification, dashboard
-+------------+------------+
-             |
-             v
-+-------------------------+
-| Planning / Task Graph   |  <- Beads Workflow + bv
-+------------+------------+
-             |
-             v
-+-------------------------+
-| Orchestration           |  <- NTM
-+------------+------------+
-             |
-      +------+------+----------------+
-      |             |                |
-      v             v                v
-  Claude Agent   Codex Agent    Gemini/other
-      |             |                |
-      +------+------+----------------+
-             |
-             v
-+-------------------------+
-| Coordination / Leases   |  <- MCP Agent Mail
-+-------------------------+
-| Safety Enforcement      |  <- DCG + policy gates
-+-------------------------+
-| Memory / Learning       |  <- CASS + CASS Memory
-+-------------------------+
-| Deployment              |  <- ACFS
-+-------------------------+
+## 🏗️ Целевая архитектура
+
+```mermaid
+flowchart TD
+    U[👤 User / Operator] --> C[Autopilot Core]
+
+    C --> P[Planning / Task Graph]
+    P --> O[Orchestration]
+
+    O --> A1[Claude Agent]
+    O --> A2[Codex Agent]
+    O --> A3[Gemini / Other Agent]
+
+    A1 --> CO[Coordination Layer]
+    A2 --> CO
+    A3 --> CO
+
+    CO --> S[Safety Enforcement]
+    S --> W[(Shared Workspace)]
+
+    C <--> M[Memory / Learning]
+    C --> V[Verification / Audit]
+    D[Deployment / Environment] --> C
+
+    classDef core fill:#1f6feb,color:#fff,stroke:#1f6feb;
+    classDef guard fill:#b62324,color:#fff,stroke:#b62324;
+    classDef memory fill:#8250df,color:#fff,stroke:#8250df;
+
+    class C core;
+    class S guard;
+    class M memory;
 ```
 
-Подробности: [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md).
-
-## Базовые принципы
-
-1. **Verify before integrate.** Никакой внешний API не считается контрактом без evidence.
-2. **Adapter-first.** Autopilot Core не должен зависеть от конкретного внешнего инструмента напрямую.
-3. **Safety fails closed.** Отказ защитного слоя не разрешает опасные операции.
-4. **Graceful degradation — только там, где это безопасно.**
-5. **Auditable execution.** План, делегирование, изменения, проверки и outcomes должны быть трассируемыми.
-6. **Idempotent orchestration.** Повторный запуск не должен дублировать или повреждать состояние.
-7. **Human authority.** Необратимые или высокорисковые действия требуют явной политики/разрешения.
-8. **Learning is evidence-based.** Память не должна превращать единичную ошибку или галлюцинацию в постоянное правило.
-
-## Интеграции, которые планируется проверить
-
-- [Dicklesworthstone/beads-workflow](https://github.com/Dicklesworthstone/beads-workflow)
-- [Dicklesworthstone/beads_viewer](https://github.com/Dicklesworthstone/beads_viewer)
-- [Dicklesworthstone/named_tmux_manager](https://github.com/Dicklesworthstone/named_tmux_manager)
-- [Dicklesworthstone/mcp_agent_mail](https://github.com/Dicklesworthstone/mcp_agent_mail)
-- [Dicklesworthstone/destructive_command_guard](https://github.com/Dicklesworthstone/destructive_command_guard)
-- [Dicklesworthstone/coding_agent_session_search](https://github.com/Dicklesworthstone/coding_agent_session_search)
-- [Dicklesworthstone/cass_memory_system](https://github.com/Dicklesworthstone/cass_memory_system)
-- [Dicklesworthstone/agentic_coding_flywheel_setup](https://github.com/Dicklesworthstone/agentic_coding_flywheel_setup)
-
-> Названия команд, MCP tools, REST routes, ports и JSON schemas не считаются подтверждёнными только потому, что упомянуты в vision или ранних заметках. Их статус ведётся в [docs/INTERFACES.md](docs/INTERFACES.md).
-
-## Репозиторий
+### Главный архитектурный принцип
 
 ```text
-.
-├── AGENTS.md
-├── CONTRIBUTING.md
-├── LICENSE
-├── README.md
-├── config/
-│   └── autopilot.example.yaml
-├── docs/
-│   ├── ARCHITECTURE.md
-│   ├── INTERFACES.md
-│   ├── ROADMAP.md
-│   ├── VERIFICATION.md
-│   ├── VISION.md
-│   └── adr/
-├── scripts/
-│   └── verify-integration.ps1
-└── tests/
+Autopilot Core
+      ↓
+Internal Capability Contract
+      ↓
+Adapter
+      ↓
+External Tool
 ```
 
-## Ближайший gate
+Flywheel не должен «врастать» в конкретный внешний инструмент. Кандидат может быть заменён, если сохраняется внутренний capability contract.
 
-Phase 0 завершается только когда:
+Подробнее: **[docs/ARCHITECTURE.md](docs/ARCHITECTURE.md)**.
 
-- `autopilot-jet` имеет зафиксированный стабильный baseline;
-- для каждой внешней интеграции сохранены версия/commit SHA и источники evidence;
-- подтверждены реальные CLI/MCP/REST контракты;
-- неизвестные интерфейсы явно помечены как UNKNOWN/PROPOSED, а не выданы за факт;
-- выбран минимальный end-to-end vertical slice;
-- архитектурные изменения зафиксированы ADR;
-- safety policy определена до запуска мультиагентного исполнения.
+---
 
-До этого момента допустимы исследования, документация, протоколы проверки и безопасные scaffolds, но не production-зависимость от неподтверждённых интерфейсов.
+## 🧩 Кандидаты интеграционного стека
 
-## Лицензия
+> Ни один пункт ниже не считается production-контрактом, пока не прошёл [verification protocol](docs/VERIFICATION.md).
 
-MIT — см. [LICENSE](LICENSE).
+| Capability | Candidate | Status |
+|---|---|:---:|
+| Planning transform | [beads-workflow](https://github.com/Dicklesworthstone/beads-workflow) | 🟡 PROPOSED |
+| Graph analysis | [beads_viewer](https://github.com/Dicklesworthstone/beads_viewer) | 🟡 PROPOSED |
+| Orchestration | [named_tmux_manager](https://github.com/Dicklesworthstone/named_tmux_manager) | 🟡 PROPOSED |
+| Coordination / leases | [mcp_agent_mail](https://github.com/Dicklesworthstone/mcp_agent_mail) | 🟡 PROPOSED |
+| Destructive action guard | [destructive_command_guard](https://github.com/Dicklesworthstone/destructive_command_guard) | 🟡 PROPOSED |
+| Session search | [coding_agent_session_search](https://github.com/Dicklesworthstone/coding_agent_session_search) | 🟡 PROPOSED |
+| Procedural memory | [cass_memory_system](https://github.com/Dicklesworthstone/cass_memory_system) | 🟡 PROPOSED |
+| Environment setup | [agentic_coding_flywheel_setup](https://github.com/Dicklesworthstone/agentic_coding_flywheel_setup) | 🟡 PROPOSED |
+
+Полный реестр: **[docs/INTERFACES.md](docs/INTERFACES.md)**.
+
+---
+
+## 🛡️ Принципы проекта
+
+### Verify before integrate
+Внешний CLI, MCP tool, REST route, schema или port не становится контрактом только потому, что он встретился в README, issue или старой заметке.
+
+### Safety fails closed
+Если обязательный защитный слой недоступен, high-risk действие не становится автоматически разрешённым.
+
+### Adapter-first
+Vendor-specific интерфейсы остаются на границе adapter layer, а не распространяются по Core.
+
+### Auditable execution
+Планирование, делегирование, изменения, approvals, проверки и outcomes должны иметь traceable identity.
+
+### Idempotent orchestration
+Повторный запуск не должен дублировать задачи, повторно применять один patch или разрушать состояние.
+
+### Human authority
+Высокорисковые и необратимые действия остаются под явной политикой разрешений.
+
+### Evidence-based learning
+Память хранит provenance/confidence и должна поддерживать подтверждение, понижение confidence, supersession и invalidation.
+
+---
+
+## 🔄 Как должен выглядеть один run
+
+```text
+01  User intent
+      ↓
+02  Specification
+      ↓
+03  Task graph
+      ↓
+04  Relevant memory/context
+      ↓
+05  Scheduling
+      ↓
+06  Agent assignment + coordination
+      ↓
+07  Safety preflight
+      ↓
+08  Execution
+      ↓
+09  Verification
+      ↓
+10  Outcome + audit
+      ↓
+11  Memory feedback
+```
+
+---
+
+## 🗺️ Roadmap
+
+| Phase | Цель | Статус |
+|---|---|:---:|
+| **0 — Foundation & Verification** | Vision, architecture, governance, подтверждение реальных interfaces | 🟠 CURRENT |
+| **1 — Core Contracts & Safety** | Single-agent lifecycle, adapters, audit, safety boundary | ⚪ PLANNED |
+| **2 — Memory** | Retrieval, provenance, feedback, invalidation | ⚪ PLANNED |
+| **3 — Planning Graph** | Dependency-aware task execution | ⚪ PLANNED |
+| **4 — Orchestration** | Managed agent sessions, recovery, concurrency | ⚪ PLANNED |
+| **5 — Multi-Agent Coordination** | Identity, leases, conflicts, parallel writes | ⚪ PLANNED |
+| **6 — Deployment** | Reproducible environment and rollback | ⚪ PLANNED |
+| **7 — Productization** | Operator UX, benchmarks, v1.0 criteria | ⚪ PLANNED |
+
+Полный roadmap и exit criteria: **[docs/ROADMAP.md](docs/ROADMAP.md)**.
+
+---
+
+## 🚦 Что уже есть
+
+- [x] Detailed product vision
+- [x] Architecture foundation
+- [x] Agent governance rules
+- [x] Integration registry
+- [x] Verification protocol
+- [x] ADR process
+- [x] Contribution workflow
+- [x] GitHub issue / PR workflow
+- [ ] Stable `autopilot-jet` baseline pinned
+- [ ] Candidate integrations verified
+- [ ] Compatibility matrix completed
+- [ ] First vertical slice selected
+- [ ] Production implementation
+
+---
+
+## 📚 Документация
+
+| Документ | Что внутри |
+|---|---|
+| **[Vision](docs/VISION.md)** | Полная продуктовая идея, мотивация, сценарии, риски и целевые метрики |
+| **[Architecture](docs/ARCHITECTURE.md)** | Слои, control plane, invariants, failure modes, adapter boundaries |
+| **[Interfaces](docs/INTERFACES.md)** | Статусы внешних интеграций и proposed internal contracts |
+| **[Verification](docs/VERIFICATION.md)** | Как внешний интерфейс получает статус VERIFIED |
+| **[Roadmap](docs/ROADMAP.md)** | Фазы, deliverables и exit criteria |
+| **[ADR](docs/adr/README.md)** | Architecture Decision Records |
+| **[Agent Rules](AGENTS.md)** | Правила для Codex, Claude Code и других coding agents |
+| **[Contributing](CONTRIBUTING.md)** | Как предлагать изменения и интеграции |
+| **[Security](SECURITY.md)** | Как сообщать о проблемах безопасности |
+
+Оглавление docs: **[docs/README.md](docs/README.md)**.
+
+---
+
+## 🤝 Как участвовать
+
+Сейчас особенно полезны:
+
+- verification реальных upstream interfaces;
+- architecture review;
+- compatibility research;
+- safety / threat-model review;
+- contract tests;
+- ADR;
+- документация и benchmark methodology.
+
+Перед вкладом прочитайте **[CONTRIBUTING.md](CONTRIBUTING.md)** и **[AGENTS.md](AGENTS.md)**.
+
+---
+
+## 🔬 Важное ограничение текущей стадии
+
+Autopilot Flywheel **ещё не является готовой автономной платформой**.
+
+Сейчас репозиторий фиксирует архитектуру и правила, по которым она будет реализовываться. Заявленные target-метрики из Vision — например ускорение относительно одиночного агента — являются **целями для будущих benchmark**, а не достигнутыми результатами.
+
+Такой подход намеренный: сначала проверяем интерфейсы и safety assumptions, затем строим код.
+
+---
+
+## 🙏 Благодарности
+
+Идея Flywheel опирается на опыт существующей экосистемы AI coding tools и открытых проектов:
+
+- [Nick Vels / skills](https://github.com/nick-vels/skills)
+- [Dicklesworthstone ecosystem](https://github.com/Dicklesworthstone)
+- [Anthropic Claude Code](https://www.anthropic.com/)
+- [OpenAI Codex](https://openai.com/)
+- [Google Gemini](https://gemini.google.com/)
+
+Упоминание проекта или продукта здесь не означает официальную аффилиацию или endorsement.
+
+---
+
+<div align="center">
+
+### 🌀 Autopilot Flywheel
+
+**Plan → Coordinate → Execute → Verify → Learn → Repeat**
+
+[Vision](docs/VISION.md) · [Architecture](docs/ARCHITECTURE.md) · [Roadmap](docs/ROADMAP.md) · [Contributing](CONTRIBUTING.md)
+
+MIT © 2026 Alpha-Oi
+
+</div>

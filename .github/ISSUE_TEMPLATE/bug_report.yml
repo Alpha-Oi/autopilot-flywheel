@@ -1,0 +1,65 @@
+name: "🐞 Bug / inconsistency"
+description: "Сообщить об ошибке в документации, verification tooling или текущем scaffold"
+title: "[BUG] "
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Спасибо. На стадии foundation особенно важны воспроизводимые несоответствия и ошибки в source-of-truth документах.
+
+  - type: dropdown
+    id: area
+    attributes:
+      label: Area
+      options:
+        - Documentation
+        - Architecture
+        - Verification
+        - Configuration scaffold
+        - Script / tooling
+        - GitHub workflow
+        - Other
+    validations:
+      required: true
+
+  - type: textarea
+    id: observed
+    attributes:
+      label: Что наблюдается?
+      description: Опишите фактическое поведение или несоответствие.
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: Что ожидалось?
+    validations:
+      required: true
+
+  - type: textarea
+    id: reproduce
+    attributes:
+      label: Как воспроизвести?
+      placeholder: |
+        1. Open ...
+        2. Run/read ...
+        3. Observe ...
+    validations:
+      required: true
+
+  - type: textarea
+    id: evidence
+    attributes:
+      label: Evidence
+      description: Ссылки, commit SHA, version, logs или screenshots без секретов.
+
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Checks
+      options:
+        - label: Я проверил, что issue не содержит секретов или credentials.
+          required: true
+        - label: Я отличаю подтверждённый факт от предположения.
+          required: true

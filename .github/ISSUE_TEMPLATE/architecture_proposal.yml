@@ -1,0 +1,70 @@
+name: "🏗️ Architecture proposal"
+description: "Предложить изменение системных границ, runtime, state или policy"
+title: "[ARCH] "
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Значимые изменения архитектуры после обсуждения оформляются ADR.
+
+  - type: textarea
+    id: context
+    attributes:
+      label: Context / problem
+      description: Какое ограничение текущей архитектуры нужно изменить?
+    validations:
+      required: true
+
+  - type: textarea
+    id: decision
+    attributes:
+      label: Proposed decision
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: layers
+    attributes:
+      label: Affected areas
+      options:
+        - label: Core / lifecycle
+        - label: Planning
+        - label: Orchestration
+        - label: Coordination
+        - label: Safety / permissions
+        - label: Memory / learning
+        - label: Persistence / state
+        - label: Deployment
+        - label: Public interface
+
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives considered
+    validations:
+      required: true
+
+  - type: textarea
+    id: safety
+    attributes:
+      label: Safety / failure-mode impact
+    validations:
+      required: true
+
+  - type: textarea
+    id: compatibility
+    attributes:
+      label: Compatibility impact
+
+  - type: textarea
+    id: evidence
+    attributes:
+      label: Evidence / references
+
+  - type: checkboxes
+    id: confirmation
+    attributes:
+      label: Confirmation
+      options:
+        - label: Я понимаю, что accepted architecture change должен быть зафиксирован ADR.
+          required: true
