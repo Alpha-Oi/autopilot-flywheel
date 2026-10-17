@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Autopilot Flywheel</title>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #0f172a; color: #e2e8f0; margin: 0; padding: 20px; }
+        h1 { color: #38bdf8; }
+        .container { display: flex; gap: 20px; }
+        .column { flex: 1; background: #1e293b; padding: 20px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.3); }
+        .task { padding: 10px; margin-bottom: 10px; border-radius: 4px; border-left: 4px solid #94a3b8; background: #334155; }
+        .task.completed { border-left-color: #22c55e; opacity: 0.8; }
+        .task.pending { border-left-color: #f59e0b; }
+        .message { padding: 10px; margin-bottom: 10px; border-radius: 4px; background: #334155; border-left: 4px solid #38bdf8; }
+        .badge { font-size: 0.8em; padding: 2px 6px; border-radius: 10px; background: #0f172a; }
+    </style>
+</head>
+<body>
+    <h1>🚀 Autopilot Flywheel Dashboard</h1>
+    <div class="container">
+        <div class="column">
+            <h2>📋 Task Graph</h2>
+            {% if not tasks %}
+                <p>No tasks found.</p>
+            {% endif %}
+            {% for task in tasks %}
+                <div class="task {{ task.status }}">
+                    <strong>{{ task.task_id }}</strong>
+                    <span class="badge">{{ task.status }}</span>
+                </div>
+            {% endfor %}
+        </div>
+        <div class="column">
+            <h2>📬 Agent Inbox</h2>
+            {% if not messages %}
+                <p>No messages.</p>
+            {% endif %}
+            {% for msg in messages %}
+                <div class="message">
+                    <strong>{{ msg.subject }}</strong><br>
+                    <small>From: {{ msg.from }}</small>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+</body>
+</html>
