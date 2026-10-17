@@ -12,25 +12,23 @@ class LLMClient:
     def generate(self, prompt: str, system_prompt: str = "") -> str:
         with tracer.start_as_current_span("llm.generate") as span:
             span.set_attribute("model", self.model)
-            span.set_attribute("prompt_length", len(prompt))
             
             messages = []
             if system_prompt:
                 messages.append({"role": "system", "content": system_prompt})
             messages.append({"role": "user", "content": prompt})
 
-            # Проверяем, есть ли РЕАЛЬНЫЙ ключ, а не заглушка
             api_key = os.getenv("OPENAI_API_KEY", "")
             kwargs = {"temperature": 0.0}
             
-            # Если ключа нет или в нем есть "your-key", включаем мок
             if not api_key or "your-key" in api_key:
                 span.set_attribute("mock_mode", True)
+                # ИСПРАВЛЕНО: используем одинарные кавычки внутри команды
                 kwargs["mock_response"] = """
                 {
                   "tasks": [
-                    {"id": "task-1", "description": "Create API skeleton", "blocks": []},
-                    {"id": "task-2", "description": "Implement auth", "blocks": ["task-1"]}
+                    {"id": "task-1", "description": "Create API directory", "blocks": [], "command": "mkdir api"},
+                    {"id": "task-2", "description": "Create auth file", "blocks": ["task-1"], "command": "echo '# Auth Module' > api/auth.py"}
                   ]
                 }
                 """
@@ -43,9 +41,7 @@ class LLMClient:
                     messages=messages,
                     **kwargs
                 )
-                content = response.choices[0].message.content
-                span.set_attribute("response_length", len(content))
-                return content
+                return response.choices[0].message.content
             except Exception as e:
                 span.record_exception(e)
                 raise RuntimeError(f"LLM call failed: {e}")

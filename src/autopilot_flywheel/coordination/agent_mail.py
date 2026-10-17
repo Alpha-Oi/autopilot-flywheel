@@ -37,6 +37,17 @@ class AgentMailClient:
                     raise RuntimeError(f"MCP Tool Error: {result.content}")
                 return result.content[0].text if result.content else "[]"
 
+    def send_message(self, message: AgentMessage) -> MessageResponse:
+        """Синхронная отправка сообщения (ждет завершения)."""
+        with tracer.start_as_current_span("agent_mail.send_message") as span:
+            span.set_attribute("project", message.project)
+            span.set_attribute("recipient", message.recipient)
+            try:
+                return asyncio.run(self._send_async(message))
+            except Exception as e:
+                span.record_exception(e)
+                raise
+
     def send_message_nowait(self, message: AgentMessage):
         """Отправляет сообщение в фоне, но ждет до 3 секунд, чтобы оно точно ушло."""
         def _worker():
@@ -45,10 +56,9 @@ class AgentMailClient:
             except Exception:
                 pass
 
-        # Запускаем поток НЕ как daemon, чтобы дождаться завершения
         t = threading.Thread(target=_worker)
         t.start()
-        t.join(timeout=3.0) # Ждем максимум 3 секунды. Если MCP зависнет, идем дальше.
+        t.join(timeout=3.0)
 
     def fetch_inbox(self, project: str, agent: str) -> str:
         with tracer.start_as_current_span("agent_mail.fetch_inbox") as span:

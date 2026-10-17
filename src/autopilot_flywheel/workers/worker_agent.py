@@ -1,14 +1,17 @@
+import subprocess
 from autopilot_flywheel.state.manager import StateManager
 from autopilot_flywheel.state.models import TaskState
 from autopilot_flywheel.prompts.task_models import TaskNode
 from autopilot_flywheel.observability.tracer import tracer
 from autopilot_flywheel.coordination.agent_mail import AgentMailClient
 from autopilot_flywheel.coordination.models import AgentMessage
+from autopilot_flywheel.orchestrator import AutopilotOrchestrator
 
 class WorkerAgent:
     def __init__(self, mail_client: AgentMailClient = None):
         self.state_manager = StateManager()
         self.mail_client = mail_client or AgentMailClient()
+        self.orchestrator = AutopilotOrchestrator()
 
     def run(self, coordinator_id: str = "Coordinator"):
         with tracer.start_as_current_span("worker.run"):
@@ -32,6 +35,35 @@ class WorkerAgent:
             
             print(f"⚙️ Executing: {node.description}...")
             
+            # Если есть команда - проверяем её безопасность и выполняем
+            if node.command:
+                print(f"  > Running command: {node.command}")
+                # Проверка через Policy и DCG
+                allowed = self.orchestrator.process_command(task_id=node.id, command=node.command)
+                
+                if not allowed:
+                    print(f"❌ Task {node.id} blocked by security policy.")
+                    new_state = TaskState(task_id=node.id, status="blocked", payload=state.payload)
+                    self.state_manager.save_state(new_state)
+                    return
+
+                # Выполняем команду
+                try:
+                    result = subprocess.run(
+                        node.command, 
+                        shell=True, 
+                        capture_output=True, 
+                        text=True, 
+                        cwd="." # Выполняем в текущей директории
+                    )
+                    if result.returncode == 0:
+                        print(f"  ✅ Command output: {result.stdout.strip()}")
+                    else:
+                        print(f"  ❌ Command failed: {result.stderr.strip()}")
+                except Exception as e:
+                    print(f"  ❌ Execution error: {e}")
+
+            # Меняем статус
             new_state = TaskState(task_id=node.id, status="completed", payload=state.payload)
             self.state_manager.save_state(new_state)
             print(f"✅ Task {node.id} completed.")
@@ -41,8 +73,7 @@ class WorkerAgent:
                 sender="WorkerAgent",
                 recipient=coordinator_id,
                 subject=f"Task {node.id} completed",
-                body=f"Task {node.id} ({node.description}) has been completed successfully."
+                body=f"Task {node.id} ({node.description}) has been completed."
             )
-            # Используем фоновую отправку
             self.mail_client.send_message_nowait(msg)
             print(f"📨 Notification dispatched to {coordinator_id}.")
