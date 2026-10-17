@@ -43,8 +43,6 @@ class WorkerAgent:
                 subject=f"Task {node.id} completed",
                 body=f"Task {node.id} ({node.description}) has been completed successfully."
             )
-            try:
-                self.mail_client.send_message(msg)
-                print(f"📨 Notification sent to {coordinator_id}.")
-            except Exception as e:
-                print(f"⚠️ Failed to send notification: {e}")
+            # Используем фоновую отправку
+            self.mail_client.send_message_nowait(msg)
+            print(f"📨 Notification dispatched to {coordinator_id}.")
