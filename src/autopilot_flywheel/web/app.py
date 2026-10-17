@@ -8,6 +8,7 @@ from autopilot_flywheel.prompts.planner_agent import PlannerAgent
 from autopilot_flywheel.workers.worker_agent import WorkerAgent
 from autopilot_flywheel.coordination.coordinator_agent import CoordinatorAgent
 from autopilot_flywheel.reviewer.agent import ReviewerAgent
+from autopilot_flywheel.prompts.task_models import TaskNode
 
 app = FastAPI(title="Autopilot Flywheel Dashboard")
 templates = Jinja2Templates(directory="src/autopilot_flywheel/web/templates")
@@ -15,7 +16,26 @@ templates = Jinja2Templates(directory="src/autopilot_flywheel/web/templates")
 @app.get("/", response_class=HTMLResponse)
 def dashboard(request: Request):
     manager = StateManager()
-    tasks = manager.get_all_tasks()
+    raw_tasks = manager.get_all_tasks()
+    
+    # Формируем строку для Mermaid прямо в Python
+    mermaid_lines = ["graph TD"]
+    tasks = []
+    for t in raw_tasks:
+        node = TaskNode.model_validate_json(t.payload)
+        safe_id = t.task_id.replace("-", "_")
+        mermaid_lines.append(f'    {safe_id}["{t.task_id}<br>{t.status}"]')
+        for block in node.blocks:
+            safe_block = block.replace("-", "_")
+            mermaid_lines.append(f'    {safe_block} --> {safe_id}')
+        tasks.append({
+            "id": t.task_id,
+            "description": node.description,
+            "status": t.status,
+            "blocks": node.blocks
+        })
+    mermaid_code = "\n".join(mermaid_lines)
+    
     messages = []
     try:
         mail = AgentMailClient()
@@ -25,7 +45,9 @@ def dashboard(request: Request):
         messages = [{"subject": f"Ошибка: {e}", "from": "System"}]
 
     return templates.TemplateResponse(
-        request=request, name="index.html", context={"tasks": tasks, "messages": messages}
+        request=request, 
+        name="index.html", 
+        context={"tasks": tasks, "messages": messages, "mermaid_code": mermaid_code}
     )
 
 @app.post("/run-plan")
