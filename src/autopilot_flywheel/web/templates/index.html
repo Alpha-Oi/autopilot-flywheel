@@ -3,25 +3,47 @@
 <head>
     <title>Autopilot Flywheel</title>
     <style>
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #0f172a; color: #e2e8f0; margin: 0; padding: 20px; }
+        body { font-family: 'Segoe UI', sans-serif; background: #0f172a; color: #e2e8f0; margin: 0; padding: 20px; }
         h1 { color: #38bdf8; }
         .container { display: flex; gap: 20px; }
-        .column { flex: 1; background: #1e293b; padding: 20px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.3); }
+        .column { flex: 1; background: #1e293b; padding: 20px; border-radius: 8px; }
         .task { padding: 10px; margin-bottom: 10px; border-radius: 4px; border-left: 4px solid #94a3b8; background: #334155; }
-        .task.completed { border-left-color: #22c55e; opacity: 0.8; }
+        .task.completed { border-left-color: #22c55e; }
         .task.pending { border-left-color: #f59e0b; }
-        .message { padding: 10px; margin-bottom: 10px; border-radius: 4px; background: #334155; border-left: 4px solid #38bdf8; }
+        .task.needs_fix { border-left-color: #ef4444; }
+        .message { padding: 10px; margin-bottom: 10px; background: #334155; border-left: 4px solid #38bdf8; }
         .badge { font-size: 0.8em; padding: 2px 6px; border-radius: 10px; background: #0f172a; }
+        .controls { margin-bottom: 20px; display: flex; gap: 10px; flex-wrap: wrap; }
+        button { padding: 10px 15px; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; color: white; }
+        .btn-plan { background: #3b82f6; }
+        .btn-exec { background: #10b981; }
+        .btn-coord { background: #f59e0b; }
+        .btn-review { background: #8b5cf6; }
+        input { padding: 10px; border-radius: 4px; border: 1px solid #475569; background: #1e293b; color: white; flex: 1; }
     </style>
 </head>
 <body>
     <h1>🚀 Autopilot Flywheel Dashboard</h1>
+    
+    <div class="controls">
+        <form action="/run-plan" method="post" style="display:flex; flex:1; gap:10px;">
+            <input type="text" name="command" placeholder="Например: Build API..." required>
+            <button type="submit" class="btn-plan">🧠 Plan</button>
+        </form>
+        <form action="/run-execute" method="post">
+            <button type="submit" class="btn-exec">🚀 Execute Worker</button>
+        </form>
+        <form action="/run-coordinate" method="post">
+            <button type="submit" class="btn-coord">👀 Coordinate</button>
+        </form>
+        <form action="/run-review" method="post">
+            <button type="submit" class="btn-review">🔍 Review</button>
+        </form>
+    </div>
+
     <div class="container">
         <div class="column">
             <h2>📋 Task Graph</h2>
-            {% if not tasks %}
-                <p>No tasks found.</p>
-            {% endif %}
             {% for task in tasks %}
                 <div class="task {{ task.status }}">
                     <strong>{{ task.task_id }}</strong>
@@ -31,9 +53,6 @@
         </div>
         <div class="column">
             <h2>📬 Agent Inbox</h2>
-            {% if not messages %}
-                <p>No messages.</p>
-            {% endif %}
             {% for msg in messages %}
                 <div class="message">
                     <strong>{{ msg.subject }}</strong><br>
