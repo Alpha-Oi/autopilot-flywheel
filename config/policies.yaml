@@ -1,0 +1,10 @@
+rules:
+  - name: "Block sudo"
+    type: "command_contains"
+    value: "sudo"
+    action: "block"
+
+  - name: "Block Windows System32"
+    type: "command_contains"
+    value: 'C:\Windows'
+    action: "block"
