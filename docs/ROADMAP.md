@@ -14,7 +14,7 @@ Roadmap построен через **gates**, а не только через �
 - [x] Verification protocol
 - [x] Agent governance rules
 - [x] ADR process
-- [ ] `autopilot-jet` stable baseline identified
+- [ ] `Autopilot Core` stable baseline identified
 - [ ] baseline version/commit pinned
 - [ ] все candidate integrations проверены
 - [ ] compatibility matrix заполнена

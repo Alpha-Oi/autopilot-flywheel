@@ -5,7 +5,7 @@
 ### From a single coding agent to a governed, multi-agent software factory
 
 **Мультиагентная самообучающаяся платформа для автономной разработки ПО.**  
-Эволюция [autopilot-jet](https://github.com/Alpha-Oi/autopilot-jet) в сторону координируемой, проверяемой и безопасной агентной системы.
+Эволюция Autopilot Core в сторону координируемой, проверяемой и безопасной агентной системы.
 
 <p>
   <img alt="Project status" src="https://img.shields.io/badge/status-vision-3b82f6?style=for-the-badge">
@@ -207,7 +207,7 @@ Vendor-specific интерфейсы остаются на границе adapte
 - [x] ADR process
 - [x] Contribution workflow
 - [x] GitHub issue / PR workflow
-- [ ] Stable `autopilot-jet` baseline pinned
+- [ ] Stable `Autopilot Core` baseline pinned
 - [ ] Candidate integrations verified
 - [ ] Compatibility matrix completed
 - [ ] First vertical slice selected
