@@ -37,3 +37,9 @@ class StateManager:
                 if row:
                     return TaskState(task_id=row[0], status=row[1], payload=row[2])
             return None
+
+    def get_all_tasks(self) -> list[TaskState]:
+        with tracer.start_as_current_span("state.get_all") as span:
+            with sqlite3.connect(self.db_path) as conn:
+                rows = conn.execute("SELECT task_id, status, payload FROM tasks").fetchall()
+                return [TaskState(task_id=r[0], status=r[1], payload=r[2]) for r in rows]
