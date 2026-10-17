@@ -27,3 +27,5 @@ storage.sqlite3*
 
 # Autopilot State DB
 *.db
+
+.env
