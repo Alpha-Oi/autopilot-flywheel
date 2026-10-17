@@ -1,6 +1,7 @@
 from pydantic import BaseModel, Field
 
 class AgentMessage(BaseModel):
+    project: str = Field(default="default", description="Имя проекта")
     sender: str = Field(..., description="Имя агента-отправителя")
     recipient: str = Field(..., description="Имя агента-получателя")
     subject: str = Field(..., description="Тема сообщения")
@@ -8,9 +9,4 @@ class AgentMessage(BaseModel):
 
 class MessageResponse(BaseModel):
     status: str
-    message_id: int
-
-class DcgResult(BaseModel):
-    command: str = Field(..., description="Проверенная команда")
-    allowed: bool = Field(..., description="True, если команда разрешена")
-    reason: str | None = Field(None, description="Причина блокировки, если есть")
+    message_id: int | None = None

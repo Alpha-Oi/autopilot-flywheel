@@ -3,6 +3,7 @@ import sys
 from autopilot_flywheel.orchestrator import AutopilotOrchestrator
 from autopilot_flywheel.prompts.planner_agent import PlannerAgent
 from autopilot_flywheel.workers.worker_agent import WorkerAgent
+from autopilot_flywheel.coordination.coordinator_agent import CoordinatorAgent
 
 def main():
     parser = argparse.ArgumentParser(description="Autopilot Flywheel CLI")
@@ -10,6 +11,7 @@ def main():
     parser.add_argument("--task-id", type=str, default="default", help="Task ID")
     parser.add_argument("--plan", action="store_true", help="Use PlannerAgent to generate tasks")
     parser.add_argument("--execute", action="store_true", help="Run pending tasks")
+    parser.add_argument("--coordinate", action="store_true", help="Run Coordinator to check inbox")
     args = parser.parse_args()
 
     if args.plan:
@@ -24,6 +26,11 @@ def main():
         print("🚀 Starting worker...")
         worker = WorkerAgent()
         worker.run()
+        sys.exit(0)
+    elif args.coordinate:
+        print("👀 Starting coordinator...")
+        coordinator = CoordinatorAgent()
+        coordinator.run()
         sys.exit(0)
     elif args.command:
         orchestrator = AutopilotOrchestrator()
