@@ -24,3 +24,6 @@ config/autopilot.yaml
 
 # MCP Agent Mail DB
 storage.sqlite3*
+
+# Autopilot State DB
+*.db
