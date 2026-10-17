@@ -18,14 +18,18 @@ class DcgGuard:
         with tracer.start_as_current_span("dcg.check_command") as span:
             span.set_attribute("command", command)
             
-            result = subprocess.run(
-                [self.dcg_path, "test", command],
-                capture_output=True, text=True, encoding="utf-8", errors="ignore"
-            )
-            
-            allowed = "Result: ALLOWED" in result.stdout or result.returncode == 0
+            try:
+                result = subprocess.run(
+                    [self.dcg_path, "test", command],
+                    capture_output=True, text=True, encoding="utf-8", errors="ignore"
+                )
+                allowed = "Result: ALLOWED" in result.stdout or result.returncode == 0
+            except (ValueError, OSError) as e:
+                # Если команда содержит нулевые байты или другие спецсимволы
+                allowed = False
+                span.record_exception(e)
+                
             span.set_attribute("allowed", allowed)
-            
             if allowed:
                 return DcgResult(command=command, allowed=True)
-            return DcgResult(command=command, allowed=False, reason="Blocked by DCG")
+            return DcgResult(command=command, allowed=False, reason="Blocked by DCG or invalid input")
