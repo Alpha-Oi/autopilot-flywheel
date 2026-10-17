@@ -8,3 +8,8 @@ rules:
     type: "command_contains"
     value: 'C:\Windows'
     action: "block"
+
+  - name: "Block mkdir for HITL testing"
+    type: "command_contains"
+    value: "mkdir"
+    action: "block"
