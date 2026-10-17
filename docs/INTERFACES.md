@@ -32,7 +32,7 @@
 Ранние документы содержали примеры вроде:
 
 - `bv --robot-triage`;
-- `ntm spawn ...`;
+| **NTM** | Control / Execution | `VERIFIED` | v1.37.2 installed in WSL (Ubuntu). Shell integration added. |
 - `cm context ...`;
 - `cm outcome ...`;
 - предполагаемые MCP inbox/outbox/file leases;
