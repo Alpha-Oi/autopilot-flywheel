@@ -9,3 +9,8 @@ class AgentMessage(BaseModel):
 class MessageResponse(BaseModel):
     status: str
     message_id: int
+
+class DcgResult(BaseModel):
+    command: str = Field(..., description="Проверенная команда")
+    allowed: bool = Field(..., description="True, если команда разрешена")
+    reason: str | None = Field(None, description="Причина блокировки, если есть")

@@ -6,7 +6,11 @@ def guard():
     return DcgGuard()
 
 def test_safe_command(guard):
-    assert guard.check_command("git status") is True
+    result = guard.check_command("git status")
+    assert result.allowed is True
+    assert result.command == "git status"
 
 def test_destructive_command(guard):
-    assert guard.check_command("git reset --hard HEAD~5") is False
+    result = guard.check_command("git reset --hard HEAD~5")
+    assert result.allowed is False
+    assert result.reason is not None
