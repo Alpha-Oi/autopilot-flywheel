@@ -24,7 +24,7 @@
 | Coordination / leases | Dicklesworthstone/mcp_agent_mail | PROPOSED | — | — | — |
 | Destructive command guard | Dicklesworthstone/destructive_command_guard | PROPOSED | — | — | — |
 | Session search | Dicklesworthstone/coding_agent_session_search | PROPOSED | — | — | — |
-| Procedural memory | Dicklesworthstone/cass_memory_system | PROPOSED | — | — | — |
+| **CASS** | Knowledge | `VERIFIED` | v0.10.0 installed on Windows. `cass index` successfully scanned 31 connectors. |
 | Environment setup | Dicklesworthstone/agentic_coding_flywheel_setup | PROPOSED | — | — | — |
 
 ## 3. Важное правило
