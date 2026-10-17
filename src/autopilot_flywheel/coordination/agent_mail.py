@@ -1,28 +1,26 @@
 import httpx
+from .models import AgentMessage, MessageResponse
 
 class AgentMailClient:
-    """Обертка для MCP Agent Mail."""
+    """Обертка для MCP Agent Mail с использованием Pydantic."""
 
     def __init__(self, base_url: str = "http://127.0.0.1:8765"):
         self.base_url = base_url
 
-    def send_message(self, sender: str, recipient: str, subject: str, body: str) -> dict:
+    def send_message(self, message: AgentMessage) -> MessageResponse:
         """
         Отправляет сообщение агенту.
-        Возвращает ответ сервера в виде словаря.
+        Принимает AgentMessage, возвращает MessageResponse.
         """
-        payload = {
-            "sender": sender,
-            "recipient": recipient,
-            "subject": subject,
-            "body": body
-        }
+        # Конвертируем модель Pydantic в словарь для отправки
+        payload = message.model_dump()
         
-        # Отправляем POST-запрос на сервер
         response = httpx.post(
             f"{self.base_url}/api/messages", 
             json=payload, 
             timeout=5.0
         )
         response.raise_for_status()
-        return response.json()
+        
+        # Валидируем ответ сервера через модель
+        return MessageResponse(**response.json())
