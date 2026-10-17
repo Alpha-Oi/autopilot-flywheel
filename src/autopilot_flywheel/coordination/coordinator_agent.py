@@ -18,6 +18,9 @@ class CoordinatorAgent:
                     return
                 
                 for msg in messages:
-                    print(f"📬 Received: {msg.get('subject')} (from {msg.get('sender_name')})")
+                    # ИСПРАВЛЕНО: используем ключ 'from' вместо 'sender_name'
+                    sender = msg.get("from", "Unknown")
+                    subject = msg.get("subject", "No Subject")
+                    print(f"📬 Received: {subject} (from {sender})")
             except json.JSONDecodeError:
                 print(f"Failed to parse inbox: {raw_messages}")
