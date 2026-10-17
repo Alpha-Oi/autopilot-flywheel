@@ -21,3 +21,6 @@ config/autopilot.yaml
 .beads/
 .cass/
 .tmux/
+
+# MCP Agent Mail DB
+storage.sqlite3*
