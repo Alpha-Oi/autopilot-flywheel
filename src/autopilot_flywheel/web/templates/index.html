@@ -17,9 +17,13 @@
         .btn-exec { background: #10b981; }
         .btn-coord { background: #f59e0b; }
         .btn-review { background: #8b5cf6; }
+        .btn-approve { background: #ef4444; margin-left: 10px; font-size: 0.9em; padding: 5px 10px;}
         input { padding: 10px; border-radius: 4px; border: 1px solid #475569; background: #1e293b; color: white; flex: 1; }
         .message { padding: 10px; margin-bottom: 10px; background: #334155; border-left: 4px solid #38bdf8; border-radius: 4px; }
         .mermaid { background: #0f172a; padding: 20px; border-radius: 8px; text-align: center; }
+        .task-list { margin-top: 20px; }
+        .task-item { display: flex; justify-content: space-between; align-items: center; padding: 10px; margin-bottom: 10px; background: #334155; border-radius: 4px; }
+        .task-pending_approval { border-left: 4px solid #ef4444; }
     </style>
 </head>
 <body>
@@ -46,6 +50,23 @@
             <h2>📋 Task Graph (Visual)</h2>
             <div class="mermaid">
 {{ mermaid_code }}
+            </div>
+            
+            <h2>⚠️ Pending Approvals</h2>
+            <div class="task-list">
+                {% for task in tasks %}
+                    {% if task.status == 'pending_approval' %}
+                    <div class="task-item task-pending_approval">
+                        <div>
+                            <strong>{{ task.id }}</strong><br>
+                            <small>{{ task.description }}</small>
+                        </div>
+                        <form action="/approve/{{ task.id }}" method="post">
+                            <button type="submit" class="btn-approve">⚠️ Approve</button>
+                        </form>
+                    </div>
+                    {% endif %}
+                {% endfor %}
             </div>
         </div>
         <div class="column" style="flex: 1;">

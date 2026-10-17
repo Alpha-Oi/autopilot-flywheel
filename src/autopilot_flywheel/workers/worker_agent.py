@@ -19,7 +19,8 @@ class WorkerAgent:
             statuses = {t.task_id: t.status for t in tasks}
             
             for task_state in tasks:
-                if task_state.status != "pending":
+                # Воркер берет задачи в статусе pending или human_approved
+                if task_state.status not in ["pending", "human_approved"]:
                     continue
                     
                 task_node = TaskNode.model_validate_json(task_state.payload)
@@ -35,27 +36,24 @@ class WorkerAgent:
             
             print(f"⚙️ Executing: {node.description}...")
             
-            # Если есть команда - проверяем её безопасность и выполняем
             if node.command:
                 print(f"  > Running command: {node.command}")
-                # Проверка через Policy и DCG
-                allowed = self.orchestrator.process_command(task_id=node.id, command=node.command)
+                
+                # Если статус human_approved, мы пропускаем проверку
+                if state.status == "human_approved":
+                    print("  ✅ Approved by human. Bypassing security checks.")
+                    allowed = True
+                else:
+                    allowed = self.orchestrator.process_command(task_id=node.id, command=node.command)
                 
                 if not allowed:
-                    print(f"❌ Task {node.id} blocked by security policy.")
-                    new_state = TaskState(task_id=node.id, status="blocked", payload=state.payload)
+                    print(f"⚠️ Task {node.id} blocked! Waiting for human approval.")
+                    new_state = TaskState(task_id=node.id, status="pending_approval", payload=state.payload)
                     self.state_manager.save_state(new_state)
                     return
 
-                # Выполняем команду
                 try:
-                    result = subprocess.run(
-                        node.command, 
-                        shell=True, 
-                        capture_output=True, 
-                        text=True, 
-                        cwd="." # Выполняем в текущей директории
-                    )
+                    result = subprocess.run(node.command, shell=True, capture_output=True, text=True, cwd=".")
                     if result.returncode == 0:
                         print(f"  ✅ Command output: {result.stdout.strip()}")
                     else:
@@ -63,7 +61,6 @@ class WorkerAgent:
                 except Exception as e:
                     print(f"  ❌ Execution error: {e}")
 
-            # Меняем статус
             new_state = TaskState(task_id=node.id, status="completed", payload=state.payload)
             self.state_manager.save_state(new_state)
             print(f"✅ Task {node.id} completed.")

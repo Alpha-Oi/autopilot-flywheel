@@ -3,6 +3,7 @@ from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.templating import Jinja2Templates
 import json
 from autopilot_flywheel.state.manager import StateManager
+from autopilot_flywheel.state.models import TaskState
 from autopilot_flywheel.coordination.agent_mail import AgentMailClient
 from autopilot_flywheel.prompts.planner_agent import PlannerAgent
 from autopilot_flywheel.workers.worker_agent import WorkerAgent
@@ -18,7 +19,6 @@ def dashboard(request: Request):
     manager = StateManager()
     raw_tasks = manager.get_all_tasks()
     
-    # Формируем строку для Mermaid прямо в Python
     mermaid_lines = ["graph TD"]
     tasks = []
     for t in raw_tasks:
@@ -68,4 +68,14 @@ def run_coordinate():
 @app.post("/run-review")
 def run_review():
     ReviewerAgent().run()
+    return RedirectResponse(url="/", status_code=303)
+
+@app.post("/approve/{task_id}")
+def approve_task(task_id: str):
+    manager = StateManager()
+    state = manager.get_state(task_id)
+    if state and state.status == "pending_approval":
+        # Меняем статус на human_approved
+        new_state = TaskState(task_id=task_id, status="human_approved", payload=state.payload)
+        manager.save_state(new_state)
     return RedirectResponse(url="/", status_code=303)
